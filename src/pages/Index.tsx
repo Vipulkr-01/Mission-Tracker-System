@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -95,6 +94,8 @@ const Index = () => {
   };
 
   const handleCreateMission = () => {
+    console.log('Creating mission with data:', newMission);
+    
     if (!newMission.name || !newMission.description || !newMission.priority) {
       toast({
         title: "Missing Information",
@@ -104,18 +105,29 @@ const Index = () => {
       return;
     }
 
+    // Handle estimated days - default to 7 days if not provided or invalid
+    const estimatedDays = parseInt(newMission.estimatedDays) || 7;
+    const currentDate = new Date();
+    const estimatedCompletionDate = new Date(currentDate.getTime() + estimatedDays * 24 * 60 * 60 * 1000);
+
+    console.log('Estimated days:', estimatedDays);
+    console.log('Current date:', currentDate);
+    console.log('Estimated completion:', estimatedCompletionDate);
+
     const mission = {
       id: missions.length + 1,
       name: newMission.name,
       status: "active",
       progress: 0,
       priority: newMission.priority,
-      startDate: new Date().toISOString().split('T')[0],
-      estimatedCompletion: new Date(Date.now() + parseInt(newMission.estimatedDays) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      startDate: currentDate.toISOString().split('T')[0],
+      estimatedCompletion: estimatedCompletionDate.toISOString().split('T')[0],
       description: newMission.description,
       teamMembers: parseInt(newMission.teamSize) || 1,
-      location: newMission.location
+      location: newMission.location || 'Mission Site'
     };
+
+    console.log('Final mission object:', mission);
 
     setMissions([...missions, mission]);
     setNewMission({ name: '', description: '', priority: '', estimatedDays: '', teamSize: '', location: '' });
